@@ -3,7 +3,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { getWeather } from './tools/get-weather';
 
 const openrouter = createOpenRouter({
-  apiKey: process.env.AI_GATEWAY_API_KEY!,
+  apiKey: process.env.FRONTEND_API_KEY!,
   baseURL: 'https://ai-gateway.frontend.co/api/v1'
 });
 
