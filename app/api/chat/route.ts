@@ -1,16 +1,17 @@
 import { streamText, convertToModelMessages } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { getWeather } from './tools/get-weather';
 
-const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
+const openrouter = createOpenRouter({
+  apiKey: process.env.AI_GATEWAY_API_KEY!,
+  baseURL: 'https://ai-gateway.frontend.co/api/v1'
 });
 
 export async function POST(request: Request) {
   try {
     const { messages } = await request.json();
 
-    const model = openai('gpt-5.2');
+    const model = openrouter('anthropic/claude-haiku-4.5');
 
     const systemMessage = {
       role: 'system',
