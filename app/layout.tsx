@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="m-0 p-0 font-body">
-        <div className="min-h-screen bg-background">
+        <div className="h-screen overflow-hidden bg-background">
           {children}
         </div>
       </body>

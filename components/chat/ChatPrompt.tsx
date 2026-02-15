@@ -52,7 +52,7 @@ export function ChatPrompt({
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
+    <div className="flex h-screen flex-col items-center justify-center gap-6 p-4">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold tracking-tight">
           How can I help you today?

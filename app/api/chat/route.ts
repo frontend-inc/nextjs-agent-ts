@@ -1,6 +1,6 @@
 import { streamText, convertToModelMessages } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { getWeather } from './tools/get-weather';
+import { tools } from './tools';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const result = await streamText({
       model,
       messages: convertedMessages,
-      tools: { getWeather },
+      tools,
     });
 
     return result.toUIMessageStreamResponse();

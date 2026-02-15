@@ -59,7 +59,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
 
   return (
     <Conversation>
-      <ConversationContent>
+      <ConversationContent className="mx-auto max-w-3xl px-4">
         {visibleMessages.map((message) => {
           const textContent = getTextContent(message.parts);
           const reasoningPart = getReasoningPart(message.parts);
