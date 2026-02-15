@@ -7,26 +7,38 @@ export interface LLMModel {
 
 export const models: LLMModel[] = [
   {
-    id: "gpt-5.2",
-    name: "GPT-5.2",
+    id: "anthropic/claude-opus-4.6",
+    name: "Claude Opus 4.6",
+    chef: "Anthropic",
+    chefSlug: "anthropic",
+  },
+  {
+    id: "anthropic/claude-sonnet-4.5",
+    name: "Claude Sonnet 4.5",
+    chef: "Anthropic",
+    chefSlug: "anthropic",
+  },
+  {
+    id: "anthropic/claude-haiku-4.5",
+    name: "Claude Haiku 4.5",
+    chef: "Anthropic",
+    chefSlug: "anthropic",
+  },
+  {
+    id: "openai/gpt-5.3",
+    name: "GPT-5.3",
     chef: "OpenAI",
     chefSlug: "openai",
   },
   {
-    id: "gpt-5-mini",
-    name: "GPT-5 Mini",
-    chef: "OpenAI",
-    chefSlug: "openai",
-  },
-  {
-    id: "gpt-5-nano",
-    name: "GPT-5 Nano",
-    chef: "OpenAI",
-    chefSlug: "openai",
+    id: "moonshotai/kimi-k2.5",
+    name: "Kimi K2.5",
+    chef: "Moonshot AI",
+    chefSlug: "moonshotai",
   },
 ];
 
-export const DEFAULT_MODEL_ID = "gpt-5.2";
+export const DEFAULT_MODEL_ID = "anthropic/claude-haiku-4.5";
 
 export function getModelById(id: string): LLMModel | undefined {
   return models.find((m) => m.id === id);

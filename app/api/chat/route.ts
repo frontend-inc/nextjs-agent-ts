@@ -1,6 +1,7 @@
 import { streamText, convertToModelMessages } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { tools } from './tools';
+import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
@@ -9,9 +10,10 @@ const openrouter = createOpenRouter({
 
 export async function POST(request: Request) {
   try {
-    const { messages } = await request.json();
+    const { messages, modelId } = await request.json();
 
-    const model = openrouter('anthropic/claude-haiku-4.5');
+    const selectedModel = getModelById(modelId) ? modelId : DEFAULT_MODEL_ID;
+    const model = openrouter(selectedModel);
 
     const systemMessage = {
       role: 'system',
