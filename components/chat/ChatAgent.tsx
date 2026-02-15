@@ -79,14 +79,14 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
   }
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden">
-      <div className="flex-1 overflow-hidden pb-32">
+    <div className="relative flex h-screen flex-col">
+      <div className="flex-1 overflow-hidden">
         <ChatMessages
           messages={chatMessages}
           isLoading={status === 'submitted' || status === 'streaming'}
         />
       </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-background p-4">
+      <div className="sticky bottom-0 bg-background p-4">
         <div className="mx-auto max-w-3xl">
           <ChatInput
             value={inputValue}
