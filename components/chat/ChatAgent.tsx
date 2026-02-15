@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { ChatStatus } from 'ai';
 import { ChatInput, type PromptInputMessage } from './ChatInput';
 import { ChatMessages } from './ChatMessages';
@@ -16,6 +16,18 @@ interface ChatAgentProps {
 export function ChatAgent({ suggestions }: ChatAgentProps) {
   const [inputValue, setInputValue] = useState('');
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL_ID);
+  const selectedModelRef = useRef(selectedModel);
+  selectedModelRef.current = selectedModel;
+
+  const transportRef = useRef(
+    new DefaultChatTransport({
+      api: '/api/chat',
+      headers: () => ({
+        'X-Agent-Id': selectedModelRef.current,
+      }),
+    })
+  );
+
   const {
     status,
     messages: chatMessages,
@@ -25,10 +37,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
     error: aiError,
     addToolApprovalResponse,
   } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      body: { model: selectedModel },
-    }),
+    transport: transportRef.current,
     onFinish: async () => {
       // Handle message completion if needed
     },

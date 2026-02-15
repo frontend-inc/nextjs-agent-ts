@@ -25,8 +25,8 @@ export const models: LLMModel[] = [
     chefSlug: "anthropic",
   },
   {
-    id: "openai/gpt-5.3",
-    name: "GPT-5.3",
+    id: "openai/gpt-5.2",
+    name: "GPT-5.2",
     chef: "OpenAI",
     chefSlug: "openai",
   },
