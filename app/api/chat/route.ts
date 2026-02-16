@@ -5,7 +5,7 @@ import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
-  baseURL: 'https://ai-gateway.frontend.co/api/v1'
+  baseURL: 'https://cloud.frontend.co/api/v1'
 });
 
 export async function POST(request: Request) {
