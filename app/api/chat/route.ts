@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     });
 
     return result.toUIMessageStreamResponse({
-      sendReasoning: true
+      sendReasoning: true            
     })
   } catch (error) {
     console.error('Chat API error:', error);
