@@ -322,7 +322,7 @@ export const MessageResponse = memo(
   ({ className, components, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
-        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        "size-full gap-2 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className
       )}
       components={{
@@ -330,7 +330,7 @@ export const MessageResponse = memo(
           <img
             src={src}
             alt={alt || ""}
-            className="aspect-square h-32 w-32 rounded-lg object-cover"
+            className="m-1 aspect-square h-24 w-24 rounded-lg object-cover"
           />
         ),
         ...components,

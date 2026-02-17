@@ -169,7 +169,7 @@ export function PromptInputProvider({
           type: "file" as const,
           url: URL.createObjectURL(file),
           mediaType: file.type,
-          filename: file.name,
+          filename: file.name.replace(/ /g, "_"),
         }))
       )
     );
@@ -417,8 +417,7 @@ export const PromptInputActionAddAttachments = ({
   return (
     <DropdownMenuItem
       {...props}
-      onSelect={(e) => {
-        e.preventDefault();
+      onSelect={() => {
         attachments.openFileDialog();
       }}
     >
@@ -552,7 +551,7 @@ export const PromptInput = ({
             type: "file",
             url: URL.createObjectURL(file),
             mediaType: file.type,
-            filename: file.name,
+            filename: file.name.replace(/ /g, "_"),
           });
         }
         return prev.concat(next);
