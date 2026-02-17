@@ -65,8 +65,6 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
           const textContent = getTextContent(message.parts);
           const reasoningPart = getReasoningPart(message.parts);
           const toolParts = message.parts.filter((p) => p.type.startsWith("tool-"));
-          const fileParts = message.parts.filter((p) => p.type === "file");
-
           return (
             <Message key={message.id} from={message.role}>
               {message.role === "assistant" && reasoningPart && (
@@ -79,22 +77,6 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
               {toolParts.map((part, index) => (
                 <ToolPartRenderer key={`tool-${index}`} part={part} />
               ))}
-
-              {fileParts.length > 0 && (
-                <MessageAttachments>
-                  {fileParts.map((part, index) => (
-                    <MessageAttachment
-                      key={`file-${index}`}
-                      data={{
-                        type: "file",
-                        url: part.url,
-                        mediaType: part.mediaType,
-                        filename: part.filename,
-                      }}
-                    />
-                  ))}
-                </MessageAttachments>
-              )}
 
               {textContent && (
                 <MessageContent from={message.role}>
