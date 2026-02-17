@@ -5,6 +5,6 @@ export const tools = {
   getWeather,
 };
 
-export const toolComponents: Record<string, React.ComponentType<any>> = {
+export const toolComponents= {
   getWeather: GetWeatherTool,
 };
