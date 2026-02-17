@@ -46,14 +46,20 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
     },
   });
 
+  const [isUploading, setIsUploading] = useState(false);
+
   const chatStatus: ChatStatus =
-    status === 'submitted' || status === 'streaming' ? status : 'ready';
+    isUploading
+      ? 'submitted'
+      : status === 'submitted' || status === 'streaming'
+        ? status
+        : 'ready';
 
   const handleSendMessage = useCallback(
     async (message: PromptInputMessage) => {
       const trimmedValue = message.text?.trim();
       if (!trimmedValue && !message.files?.length) return;
-      if (status === 'submitted' || status === 'streaming') return;
+      if (status === 'submitted' || status === 'streaming' || isUploading) return;
 
       const parts: Array<
         | { type: 'text'; text: string }
@@ -66,6 +72,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
 
       // Upload files and add them as parts
       if (message.files?.length) {
+        setIsUploading(true);
         for (const file of message.files) {
           try {
             // Convert data URL to File for upload
@@ -123,6 +130,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
             console.error('File upload error:', err);
           }
         }
+        setIsUploading(false);
       }
 
       if (parts.length === 0) return;
@@ -132,7 +140,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
       setInputValue('');
       await sendMessage(userMessage);
     },
-    [status, sendMessage, chatMessages]
+    [status, sendMessage, chatMessages, isUploading]
   );
 
   const handleStop = useCallback(() => {
