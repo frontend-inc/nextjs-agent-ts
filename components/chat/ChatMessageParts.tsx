@@ -1,6 +1,6 @@
 "use client";
 
-import { UIMessagePart } from "@/packages/ai";
+import { UIMessagePart } from "ai";
 import {
   Tool,
   ToolContent,
@@ -9,7 +9,7 @@ import {
   ToolOutput,
 } from "@/components/ai-elements/tool";
 import { Loader } from "@/components/ai-elements/loader";
-import { GetWeatherResultTool, WeatherResult } from "./tools/GetWeatherResultTool";
+import { toolComponents } from "@/chat.config";
 
 // Helper functions
 export function getTextContent(parts: UIMessagePart[]): string {
@@ -24,20 +24,13 @@ export function getReasoningPart(parts: UIMessagePart[]): UIMessagePart | undefi
 }
 
 function extractToolName(part: UIMessagePart): string {
-  // For dynamic tools, toolName is a direct property
   if (part.type === "dynamic-tool") {
     return (part as any).toolName || "unknown";
   }
-  // For static tools, the tool name is in the type: "tool-{toolName}"
   if (part.type.startsWith("tool-")) {
-    return part.type.slice(5); // Remove "tool-" prefix
+    return part.type.slice(5);
   }
   return "unknown";
-}
-
-// Tool-specific renderers
-interface ToolResultRendererProps {
-  part: UIMessagePart;
 }
 
 function DefaultToolRenderer({ part, toolName }: { part: UIMessagePart; toolName: string }) {
@@ -58,19 +51,6 @@ function DefaultToolRenderer({ part, toolName }: { part: UIMessagePart; toolName
   );
 }
 
-function WeatherToolRenderer({ part, toolName }: { part: UIMessagePart; toolName: string }) {
-  const { output, state } = part as any;
-  const isComplete = state === "output-available";
-
-  return (
-    <GetWeatherResultTool
-      toolName={toolName}
-      result={output as WeatherResult}
-      isComplete={isComplete}
-    />
-  );
-}
-
 function ToolLoadingIndicator({ toolName }: { toolName: string }) {
   return (
     <div className="mb-4 flex items-center gap-2 text-muted-foreground text-sm">
@@ -80,25 +60,29 @@ function ToolLoadingIndicator({ toolName }: { toolName: string }) {
   );
 }
 
-export function ToolPartRenderer({ part }: ToolResultRendererProps) {
+function RenderTool({ part }: { part: UIMessagePart }) {
   const toolName = extractToolName(part);
   const state = (part as any).state;
   const isComplete = state === "output-available";
 
-  switch (toolName) {
-    case "getWeather":
-      return <WeatherToolRenderer part={part} toolName={toolName} />;
-    default:
-      if (!isComplete && !(part as any).input) {
-        return <ToolLoadingIndicator toolName={toolName} />;
-      }
-      return <DefaultToolRenderer part={part} toolName={toolName} />;
+  const CustomRenderer = toolComponents[toolName];
+  if (CustomRenderer) {
+    return <CustomRenderer part={part} toolName={toolName} />;
   }
+
+  if (!isComplete && !(part as any).input) {
+    return <ToolLoadingIndicator toolName={toolName} />;
+  }
+  return <DefaultToolRenderer part={part} toolName={toolName} />;
+}
+
+export function ToolPartRenderer({ part }: { part: UIMessagePart }) {
+  return <RenderTool part={part} />;
 }
 
 export function MessagePartRenderer({ part }: { part: UIMessagePart }) {
   if (part.type.startsWith("tool-") || part.type === "dynamic-tool") {
-    return <ToolPartRenderer part={part} />;
+    return <RenderTool part={part} />;
   }
   return null;
 }

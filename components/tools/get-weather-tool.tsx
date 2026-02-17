@@ -1,5 +1,7 @@
 "use client";
 
+import type { ToolComponentProps } from "./types";
+
 interface WeatherResult {
   location: string;
   temperature: number;
@@ -42,6 +44,18 @@ function ToolStatus({ toolName, isComplete }: { toolName: string; isComplete: bo
 
 function formatTemperature(temp: number, units: "celsius" | "fahrenheit"): string {
   return `${temp}°${units === "celsius" ? "C" : "F"}`;
+}
+
+export function GetWeatherTool({ part, toolName }: ToolComponentProps) {
+  const { output, state } = part as any;
+  const isComplete = state === "output-available";
+  return (
+    <GetWeatherResultTool
+      toolName={toolName}
+      result={output as WeatherResult}
+      isComplete={isComplete}
+    />
+  );
 }
 
 export function GetWeatherResultTool({ toolName, result, isComplete }: GetWeatherResultToolProps) {

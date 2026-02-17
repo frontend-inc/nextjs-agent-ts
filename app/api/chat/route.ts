@@ -1,11 +1,11 @@
-import { streamText, convertToModelMessages } from 'ai';
+import { streamText, convertToModelMessages, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { tools } from './tools';
+import { tools } from '@/chat.config';
 import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
-  baseURL: 'https://cloud.frontend.co/api/v1'
+  baseURL: 'https://cloud.frontend.co/api/v1',
 });
 
 export async function POST(request: Request) {
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       model,
       messages: convertedMessages,
       tools,
+      stopWhen: stepCountIs(20),
     });
 
     return result.toUIMessageStreamResponse();

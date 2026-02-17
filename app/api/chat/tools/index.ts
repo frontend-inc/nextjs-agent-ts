@@ -1,5 +1,3 @@
-import { getWeather } from "./get-weather";
+import { tools } from "@/chat.config";
 
-export { getWeather };
-
-export const tools = { getWeather };
+export { tools };
