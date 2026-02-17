@@ -1609,7 +1609,7 @@ ai@6.0.68:
     "@ai-sdk/provider-utils" "4.0.13"
     "@opentelemetry/api" "1.9.0"
 
-ai@^6.0.62:
+ai@^6.0.86:
   version "6.0.86"
   resolved "https://registry.yarnpkg.com/ai/-/ai-6.0.86.tgz#cee563e8a0d9b87f8fdda764f190e7dd3f81ba00"
   integrity sha512-U2W2LBCHA/pr0Ui7vmmsjBiLEzBbZF3yVHNy7Rbzn7IX+SvoQPFM5rN74hhfVzZoE8zBuGD4nLLk+j0elGacvQ==
@@ -2235,10 +2235,10 @@ longest-streak@^3.0.0:
   resolved "https://registry.yarnpkg.com/longest-streak/-/longest-streak-3.1.0.tgz#62fa67cd958742a1574af9f39866364102d90cd4"
   integrity sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==
 
-lucide-react@^0.563.0:
-  version "0.563.0"
-  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.563.0.tgz#9a660d6f009942914a0df42391cf7d7d4dbcc713"
-  integrity sha512-8dXPB2GI4dI8jV4MgUDGBeLdGk8ekfqVZ0BdLcrRzocGgG75ltNEmWS+gE7uokKF/0oSUuczNDT+g9hFJ23FkA==
+lucide-react@^0.574.0:
+  version "0.574.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.574.0.tgz#1871f07319ec4119a748d65eda39e51d0f81d9d2"
+  integrity sha512-dJ8xb5juiZVIbdSn3HTyHsjjIwUwZ4FNwV0RtYDScOyySOeie1oXZTymST6YPJ4Qwt3Po8g4quhYl4OxtACiuQ==
 
 magic-string@^0.30.21:
   version "0.30.21"
@@ -3182,7 +3182,7 @@ sharp@^0.34.4:
     "@img/sharp-win32-ia32" "0.34.5"
     "@img/sharp-win32-x64" "0.34.5"
 
-shiki@^3.21.0:
+shiki@^3.22.0:
   version "3.22.0"
   resolved "https://registry.yarnpkg.com/shiki/-/shiki-3.22.0.tgz#3d590efee11feb75769354b1f64240915c3af827"
   integrity sha512-LBnhsoYEe0Eou4e1VgJACes+O6S6QC0w71fCSp5Oya79inkwkm15gQ1UF6VtQ8j/taMDh79hAB49WUk8ALQW3g==
