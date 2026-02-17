@@ -26,6 +26,7 @@ interface ChatMessagesProps {
   isLoading?: boolean;
 }
 
+
 function LoadingIndicator() {
   return (
     <Message from="assistant">

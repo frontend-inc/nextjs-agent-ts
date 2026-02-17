@@ -51,15 +51,83 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
 
   const handleSendMessage = useCallback(
     async (message: PromptInputMessage) => {
-
       const trimmedValue = message.text?.trim();
       if (!trimmedValue && !message.files?.length) return;
       if (status === 'submitted' || status === 'streaming') return;
 
-      const userMessage = {
-        role: 'user',
-        parts: [{ type: 'text', text: trimmedValue || '' }],
-      };
+      const parts: Array<
+        | { type: 'text'; text: string }
+        | { type: 'file'; url: string; mediaType: string; filename: string }
+      > = [];
+
+      if (trimmedValue) {
+        parts.push({ type: 'text', text: trimmedValue });
+      }
+
+      // Upload files and add them as parts
+      if (message.files?.length) {
+        for (const file of message.files) {
+          try {
+            // Convert data URL to File for upload
+            const blob = await fetch(file.url).then((r) => r.blob());
+            const uploadFile = new File(
+              [blob],
+              file.filename || 'file',
+              { type: file.mediaType }
+            );
+
+            const formData = new FormData();
+            formData.append('file', uploadFile);
+
+            const res = await fetch('/api/storage', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!res.ok) throw new Error('Upload failed');
+            const { url: fileUrl } = await res.json();
+
+            const ext = (file.filename || '').split('.').pop()?.toLowerCase();
+            const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
+            const isPdf = ext === 'pdf';
+
+            if (isImage) {
+              parts.push({
+                type: 'file',
+                url: fileUrl,
+                mediaType: file.mediaType || `image/${ext === 'jpg' ? 'jpeg' : ext}`,
+                filename: fileUrl.split('/').pop() || 'image.png',
+              });
+              parts.push({
+                type: 'text',
+                text: `![Image](${fileUrl})`,
+              });
+            } else if (isPdf) {
+              parts.push({
+                type: 'file',
+                url: fileUrl,
+                mediaType: 'application/pdf',
+                filename: fileUrl.split('/').pop() || 'document.pdf',
+              });
+              parts.push({
+                type: 'text',
+                text: `[${file.filename || 'Document'}](${fileUrl})`,
+              });
+            } else {
+              parts.push({
+                type: 'text',
+                text: `[${file.filename || 'File'}](${fileUrl})`,
+              });
+            }
+          } catch (err) {
+            console.error('File upload error:', err);
+          }
+        }
+      }
+
+      if (parts.length === 0) return;
+
+      const userMessage = { role: 'user', parts };
 
       setInputValue('');
       await sendMessage(userMessage);

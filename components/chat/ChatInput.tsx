@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import type { ChatStatus } from "ai";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, PlusIcon } from "lucide-react";
 import {
   PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
   PromptInputAttachment,
   PromptInputAttachments,
   PromptInputBody,
@@ -78,6 +82,14 @@ export function ChatInput({
       </PromptInputBody>
       <PromptInputFooter>
         <PromptInputTools>
+          <PromptInputActionMenu>
+            <PromptInputActionMenuTrigger>
+              <PlusIcon className="size-4" />
+            </PromptInputActionMenuTrigger>
+            <PromptInputActionMenuContent>
+              <PromptInputActionAddAttachments />
+            </PromptInputActionMenuContent>
+          </PromptInputActionMenu>
           <ModelSelector
             onOpenChange={setModelSelectorOpen}
             open={modelSelectorOpen}
