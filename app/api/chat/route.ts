@@ -27,9 +27,18 @@ export async function POST(request: Request) {
       messages: convertedMessages,
       tools,
       stopWhen: stepCountIs(20),
+      providerOptions: {
+        openrouter: {
+          reasoning: {
+            enabled: true
+          }
+        }
+      }
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse({
+      sendReasoning: true
+    })
   } catch (error) {
     console.error('Chat API error:', error);
     return new Response(
