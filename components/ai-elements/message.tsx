@@ -60,7 +60,7 @@ export const MessageContent = ({
   <div
     className={cn(
       "flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm",
-      from === "user" && "ml-auto rounded-lg bg-primary px-4 py-3 text-primary-foreground",
+      from === "user" && "ml-auto rounded-lg bg-muted px-4 py-3",
       from === "assistant" && "text-foreground",
       className
     )}
