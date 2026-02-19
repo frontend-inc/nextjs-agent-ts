@@ -3,7 +3,7 @@
 import { supabase } from '@/actions/supabase/client';
 
 const BUCKET = 'apps';
-const FOLDER = process.env.NEXT_PUBLIC_FRONTEND_APP_ID!;
+const FOLDER = process.env.NEXT_PUBLIC_SUPABASE_FOLDER_ID!;
 
 export async function uploadFile(formData: FormData): Promise<{ url: string }> {
   const file = formData.get('file') as File;
