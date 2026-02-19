@@ -8,7 +8,7 @@ export function FetchDocumentsTool({ part, toolName }: ToolComponentProps) {
   const { output, state } = part as any;
   const isComplete = state === "output-available";
 
-  const title = isComplete ? "Documents fetched" : "Searching documents...";
+  const title = isComplete ? "Knowledge found" : "Searching knowledge...";
 
   return (
     <Task defaultOpen={isComplete}>
@@ -21,7 +21,7 @@ export function FetchDocumentsTool({ part, toolName }: ToolComponentProps) {
                 <TaskItem key={doc.id ?? i}>{doc.title}</TaskItem>
               ))
             ) : (
-              <TaskItem>No documents found</TaskItem>
+              <TaskItem>No knowledge found</TaskItem>
             )}
           </>
         )}
