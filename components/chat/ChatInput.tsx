@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { ChatStatus } from "ai";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import {
@@ -16,7 +16,6 @@ import {
   PromptInputFooter,
   PromptInputHeader,
   type PromptInputMessage,
-  PromptInputSpeechButton,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
@@ -52,7 +51,6 @@ export function ChatInput({
   selectedModel: controlledModel,
   onModelChange,
 }: ChatInputProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const [internalModel, setInternalModel] = useState(DEFAULT_MODEL_ID);
 
@@ -77,7 +75,6 @@ export function ChatInput({
       </PromptInputHeader>
       <PromptInputBody>
         <PromptInputTextarea
-          ref={textareaRef}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
           value={value}
@@ -93,10 +90,6 @@ export function ChatInput({
               <PromptInputActionAddAttachments />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
-          <PromptInputSpeechButton
-            textareaRef={textareaRef}
-            onTranscriptionChange={onChange}
-          />
           <ModelSelector
             onOpenChange={setModelSelectorOpen}
             open={modelSelectorOpen}
