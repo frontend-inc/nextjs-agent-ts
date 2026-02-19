@@ -1,10 +1,10 @@
-import { GetWeatherTool } from "@/components/tools/get-weather-tool";
-import { getWeather } from "@/actions/tools/get-weather";
+import { CreateContactTool } from "@/components/tools/create-contact-tool";
+import { createContact } from "@/actions/tools/create-contact";
 
 export const tools = {
-  getWeather
+  createContact,
 };
 
-export const toolComponents= {
-  getWeather: GetWeatherTool
+export const toolComponents = {
+  createContact: CreateContactTool,
 };
