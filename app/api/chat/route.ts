@@ -2,6 +2,7 @@ import { streamText, convertToModelMessages, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { tools } from '@/chat.config';
 import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
+import { supabase } from '@/actions/supabase/client';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
@@ -10,6 +11,7 @@ const openrouter = createOpenRouter({
 
 export async function POST(request: Request) {
   try {
+    const chatId = request.headers.get('x-chat-id');
     const { messages, modelId } = await request.json();
 
     const selectedModel = getModelById(modelId) ? modelId : DEFAULT_MODEL_ID;
@@ -22,6 +24,9 @@ export async function POST(request: Request) {
     const allMessages = [systemMessage, ...messages];
     const convertedMessages = await convertToModelMessages(allMessages);
 
+    // Get the last user message for persistence
+    const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
+
     const result = await streamText({
       model,
       messages: convertedMessages,
@@ -33,7 +38,38 @@ export async function POST(request: Request) {
             enabled: true
           }
         }
-      }
+      },
+      onFinish: async ({ text }) => {
+        if (!chatId) return;
+
+        const messagesToInsert = [];
+
+        if (lastUserMessage) {
+          messagesToInsert.push({
+            chat_id: chatId,
+            role: 'user',
+            parts: lastUserMessage.parts,
+          });
+        }
+
+        if (text) {
+          messagesToInsert.push({
+            chat_id: chatId,
+            role: 'assistant',
+            parts: [{ type: 'text', text }],
+          });
+        }
+
+        if (messagesToInsert.length > 0) {
+          const { error } = await supabase
+            .from('messages')
+            .insert(messagesToInsert);
+
+          if (error) {
+            console.error('Failed to persist messages:', error);
+          }
+        }
+      },
     });
 
     return result.toUIMessageStreamResponse({

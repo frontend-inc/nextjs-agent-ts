@@ -1,13 +1,20 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatStatus } from 'ai';
 import { ChatInput, type PromptInputMessage } from './ChatInput';
 import { ChatMessages } from './ChatMessages';
 import { ChatPrompt, PromptSuggestion } from './ChatPrompt';
+import { ChatSidebar, type Chat } from './ChatSidebar';
 import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { DEFAULT_MODEL_ID } from '@/lib/llm-models';
+import { getUserId } from '@/actions/supabase/chat-store';
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
 interface ChatAgentProps {
   suggestions?: PromptSuggestion[];
@@ -16,14 +23,19 @@ interface ChatAgentProps {
 export function ChatAgent({ suggestions }: ChatAgentProps) {
   const [inputValue, setInputValue] = useState('');
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL_ID);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [chats, setChats] = useState<Chat[]>([]);
   const selectedModelRef = useRef(selectedModel);
+  const chatIdRef = useRef(chatId);
   selectedModelRef.current = selectedModel;
+  chatIdRef.current = chatId;
 
   const transportRef = useRef(
     new DefaultChatTransport({
       api: '/api/chat',
       headers: () => ({
         'X-Agent-Id': selectedModelRef.current,
+        ...(chatIdRef.current ? { 'x-chat-id': chatIdRef.current } : {}),
       }),
     })
   );
@@ -39,7 +51,8 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
   } = useChat({
     transport: transportRef.current,
     onFinish: async () => {
-      // Handle message completion if needed
+      // Refresh chat list after message completion
+      fetchChats();
     },
     onError: (error) => {
       console.error('Chat error:', error);
@@ -55,11 +68,100 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
         ? status
         : 'ready';
 
+  const fetchChats = useCallback(async () => {
+    const userId = getUserId();
+    if (!userId) return;
+
+    try {
+      const res = await fetch(`/api/chats?userId=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const { chats: fetchedChats } = await res.json();
+        setChats(fetchedChats || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch chats:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchChats();
+  }, [fetchChats]);
+
+  const handleSelectChat = useCallback(
+    async (selectedChatId: string) => {
+      try {
+        const res = await fetch(`/api/chats/${selectedChatId}/messages`);
+        if (!res.ok) return;
+
+        const { messages } = await res.json();
+        setChatId(selectedChatId);
+
+        const uiMessages: UIMessage[] = messages.map((msg: { role: string; parts: Array<{ type: string; text?: string }> }, index: number) => ({
+          id: `${selectedChatId}-${index}`,
+          role: msg.role,
+          parts: msg.parts,
+          content: msg.parts
+            .filter((p: { type: string }) => p.type === 'text')
+            .map((p: { text?: string }) => p.text)
+            .join(''),
+        }));
+
+        setChatMessages(uiMessages);
+      } catch (error) {
+        console.error('Failed to load chat:', error);
+      }
+    },
+    [setChatMessages]
+  );
+
+  const handleNewChat = useCallback(() => {
+    setChatId(null);
+    setChatMessages([]);
+    setInputValue('');
+  }, [setChatMessages]);
+
+  const handleDeleteChat = useCallback(
+    async (deletedChatId: string) => {
+      try {
+        await fetch(`/api/chats/${deletedChatId}`, { method: 'DELETE' });
+        setChats((prev) => prev.filter((c) => c.id !== deletedChatId));
+        if (chatId === deletedChatId) {
+          setChatId(null);
+          setChatMessages([]);
+        }
+      } catch (error) {
+        console.error('Failed to delete chat:', error);
+      }
+    },
+    [chatId, setChatMessages]
+  );
+
   const handleSendMessage = useCallback(
     async (message: PromptInputMessage) => {
       const trimmedValue = message.text?.trim();
       if (!trimmedValue && !message.files?.length) return;
       if (status === 'submitted' || status === 'streaming' || isUploading) return;
+
+      // Create chat on first message
+      if (!chatIdRef.current) {
+        const newChatId = crypto.randomUUID();
+        const userId = getUserId();
+        const title = trimmedValue
+          ? trimmedValue.slice(0, 100)
+          : 'New Chat';
+
+        setChatId(newChatId);
+
+        try {
+          await fetch('/api/chats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: newChatId, title, user_id: userId }),
+          });
+        } catch (error) {
+          console.error('Failed to create chat:', error);
+        }
+      }
 
       const parts: Array<
         | { type: 'text'; text: string }
@@ -149,41 +251,58 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
 
   const hasMessages = chatMessages.length > 0;
 
-  if (!hasMessages) {
-    return (
-      <ChatPrompt
-        value={inputValue}
-        onChange={setInputValue}
-        onSubmit={handleSendMessage}
-        status={chatStatus}
-        suggestions={suggestions}
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-      />
-    );
-  }
-
   return (
-    <div className="relative flex h-screen flex-col">
-      <div className="flex-1 overflow-hidden">
-        <ChatMessages
-          messages={chatMessages}
-          isLoading={status === 'submitted' || status === 'streaming'}
-        />
-      </div>
-      <div className="sticky bottom-0 bg-background p-4">
-        <div className="mx-auto max-w-3xl">
-          <ChatInput
-            value={inputValue}
-            onChange={setInputValue}
-            onSubmit={handleSendMessage}
-            status={chatStatus}
-            selectedModel={selectedModel}
-            onModelChange={setSelectedModel}
-          />
-        </div>
-      </div>
-    </div>
+    <SidebarProvider>
+      <ChatSidebar
+        chats={chats}
+        activeChatId={chatId}
+        onSelectChat={handleSelectChat}
+        onNewChat={handleNewChat}
+        onDeleteChat={handleDeleteChat}
+      />
+      <SidebarInset>
+        {!hasMessages ? (
+          <div className="relative">
+            <div className="absolute top-2 left-2 z-10">
+              <SidebarTrigger />
+            </div>
+            <ChatPrompt
+              value={inputValue}
+              onChange={setInputValue}
+              onSubmit={handleSendMessage}
+              status={chatStatus}
+              suggestions={suggestions}
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+            />
+          </div>
+        ) : (
+          <div className="relative flex h-screen flex-col">
+            <div className="absolute top-2 left-2 z-10">
+              <SidebarTrigger />
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <ChatMessages
+                messages={chatMessages}
+                isLoading={status === 'submitted' || status === 'streaming'}
+              />
+            </div>
+            <div className="sticky bottom-0 bg-background p-4">
+              <div className="mx-auto max-w-3xl">
+                <ChatInput
+                  value={inputValue}
+                  onChange={setInputValue}
+                  onSubmit={handleSendMessage}
+                  status={chatStatus}
+                  selectedModel={selectedModel}
+                  onModelChange={setSelectedModel}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 
