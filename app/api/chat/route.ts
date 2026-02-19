@@ -2,7 +2,7 @@ import { streamText, convertToModelMessages, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { tools } from '@/chat.config';
 import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
-import { supabase } from '@/actions/supabase/client';
+import { insertMessages } from '@/actions/supabase/messages';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.FRONTEND_API_KEY!,
@@ -61,11 +61,9 @@ export async function POST(request: Request) {
         }
 
         if (messagesToInsert.length > 0) {
-          const { error } = await supabase
-            .from('messages')
-            .insert(messagesToInsert);
-
-          if (error) {
+          try {
+            await insertMessages(messagesToInsert);
+          } catch (error) {
             console.error('Failed to persist messages:', error);
           }
         }
@@ -73,7 +71,7 @@ export async function POST(request: Request) {
     });
 
     return result.toUIMessageStreamResponse({
-      sendReasoning: true            
+      sendReasoning: true
     })
   } catch (error) {
     console.error('Chat API error:', error);

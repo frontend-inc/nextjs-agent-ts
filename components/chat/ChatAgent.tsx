@@ -10,6 +10,9 @@ import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { DEFAULT_MODEL_ID } from '@/lib/llm-models';
 import { getUserId } from '@/actions/supabase/chat-store';
+import { uploadFile } from '@/actions/supabase/upload-file';
+import { createChat, listChats, deleteChat } from '@/actions/supabase/chats';
+import { getMessages } from '@/actions/supabase/messages';
 import {
   SidebarProvider,
   SidebarInset,
@@ -73,11 +76,8 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
     if (!userId) return;
 
     try {
-      const res = await fetch(`/api/chats?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const { chats: fetchedChats } = await res.json();
-        setChats(fetchedChats || []);
-      }
+      const fetchedChats = await listChats(userId);
+      setChats(fetchedChats || []);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -90,10 +90,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
   const handleSelectChat = useCallback(
     async (selectedChatId: string) => {
       try {
-        const res = await fetch(`/api/chats/${selectedChatId}/messages`);
-        if (!res.ok) return;
-
-        const { messages } = await res.json();
+        const messages = await getMessages(selectedChatId);
         setChatId(selectedChatId);
 
         const uiMessages: UIMessage[] = messages.map((msg: { role: string; parts: Array<{ type: string; text?: string }> }, index: number) => ({
@@ -123,7 +120,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
   const handleDeleteChat = useCallback(
     async (deletedChatId: string) => {
       try {
-        await fetch(`/api/chats/${deletedChatId}`, { method: 'DELETE' });
+        await deleteChat(deletedChatId);
         setChats((prev) => prev.filter((c) => c.id !== deletedChatId));
         if (chatId === deletedChatId) {
           setChatId(null);
@@ -153,11 +150,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
         setChatId(newChatId);
 
         try {
-          await fetch('/api/chats', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: newChatId, title, user_id: userId }),
-          });
+          await createChat(newChatId, title, userId);
         } catch (error) {
           console.error('Failed to create chat:', error);
         }
@@ -179,22 +172,15 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
           try {
             // Convert data URL to File for upload
             const blob = await fetch(file.url).then((r) => r.blob());
-            const uploadFile = new File(
+            const fileToUpload = new File(
               [blob],
               file.filename || 'file',
               { type: file.mediaType }
             );
 
             const formData = new FormData();
-            formData.append('file', uploadFile);
-
-            const res = await fetch('/api/storage', {
-              method: 'POST',
-              body: formData,
-            });
-
-            if (!res.ok) throw new Error('Upload failed');
-            const { url: fileUrl } = await res.json();
+            formData.append('file', fileToUpload);
+            const { url: fileUrl } = await uploadFile(formData);
 
             const ext = (file.filename || '').split('.').pop()?.toLowerCase();
             const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');

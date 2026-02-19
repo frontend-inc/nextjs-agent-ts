@@ -1,4 +1,4 @@
-import { supabase } from '@/actions/supabase/client';
+import { getMessages } from '@/actions/supabase/messages';
 import { NextRequest } from 'next/server';
 
 export async function GET(
@@ -7,22 +7,7 @@ export async function GET(
 ) {
   try {
     const { id: chatId } = await params;
-
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('chat_id', chatId)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
-    }
-
-    const messages = (data || []).map((msg) => ({
-      role: msg.role,
-      parts: msg.parts,
-    }));
-
+    const messages = await getMessages(chatId);
     return Response.json({ messages });
   } catch (error) {
     console.error('Fetch messages error:', error);
