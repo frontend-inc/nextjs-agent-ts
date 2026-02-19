@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { supabase } from "@/actions/supabase/client";
+import { supabase } from "@/services/supabase/client";
 
 export const createContact = tool({
   description:

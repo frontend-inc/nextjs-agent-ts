@@ -1,6 +1,6 @@
 'use server';
 
-import { supabase } from '@/actions/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 const BUCKET = 'apps';
 const FOLDER = process.env.NEXT_PUBLIC_SUPABASE_FOLDER_ID!;

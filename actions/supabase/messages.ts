@@ -1,6 +1,6 @@
 'use server';
 
-import { supabase } from '@/actions/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 export async function getMessages(chatId: string) {
   const { data, error } = await supabase

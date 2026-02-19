@@ -1,4 +1,4 @@
-import { supabase } from '@/actions/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 const BUCKET = 'apps';
