@@ -238,7 +238,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
   const hasMessages = chatMessages.length > 0;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <ChatSidebar
         chats={chats}
         activeChatId={chatId}
