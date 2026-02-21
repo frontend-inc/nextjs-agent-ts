@@ -13,6 +13,7 @@ import { getUserId } from '@/actions/supabase/chat-store';
 import { uploadFile } from '@/actions/supabase/upload-file';
 import { createChat, listChats, deleteChat } from '@/actions/supabase/chats';
 import { getMessages } from '@/actions/supabase/messages';
+import { generateUUID } from '@/lib/utils';
 import {
   SidebarProvider,
   SidebarInset,
@@ -141,7 +142,7 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
 
       // Create chat on first message
       if (!chatIdRef.current) {
-        const newChatId = crypto.randomUUID();
+        const newChatId = generateUUID();
         const userId = getUserId();
         const title = trimmedValue
           ? trimmedValue.slice(0, 100)
