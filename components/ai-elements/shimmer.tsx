@@ -1,73 +1,44 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
+import { cn } from '@/lib/utils';
 
-interface ShimmerProps extends React.HTMLAttributes<HTMLElement> {
-  as?: React.ElementType;
-  duration?: number;
-  spread?: number;
+const SHIMMER_STYLES = `
+.shimmer {
+  -webkit-mask-image: linear-gradient(
+    -75deg,
+    #000 30%,
+    rgba(0, 0, 0, 0.15) 50%,
+    #000 70%
+  );
+  -webkit-mask-size: 200%;
+  animation: shimmer 5s infinite;
 }
 
-// Inject the keyframes once globally
-let keyframesInjected = false;
+@keyframes shimmer {
+  from {
+    -webkit-mask-position: 150%;
+  }
+  to {
+    -webkit-mask-position: -50%;
+  }
+}
+`;
 
-function injectKeyframes() {
-  if (keyframesInjected || typeof document === "undefined") return;
-
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes shimmer-diagonal {
-      0% {
-        background-position: 0% 100%;
-      }
-      100% {
-        background-position: 100% 0%;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-  keyframesInjected = true;
+export interface ShimmerProps {
+  children: string;
+  as?: keyof React.JSX.IntrinsicElements;
+  className?: string;
 }
 
 export function Shimmer({
-  className,
-  as: Component = "span",
-  duration = 2,
-  spread = 2,
   children,
-  style,
-  ...props
+  as: Component = 'p',
+  className,
 }: ShimmerProps) {
-  useEffect(() => {
-    injectKeyframes();
-  }, []);
-
-  const dynamicSpread =
-    spread + (typeof children === "string" ? children.length * 0.05 : 0);
-
-  const shimmerStyle: React.CSSProperties = {
-    backgroundClip: "text",
-    WebkitBackgroundClip: "text",
-    color: "transparent",
-    backgroundImage: `linear-gradient(
-      -45deg,
-      currentColor 0%,
-      currentColor ${40 - dynamicSpread}%,
-      white ${50 - dynamicSpread / 2}%,
-      white ${50 + dynamicSpread / 2}%,
-      currentColor ${60 + dynamicSpread}%,
-      currentColor 100%
-    )`,
-    backgroundSize: "300% 300%",
-    animation: `shimmer-diagonal ${duration}s linear infinite`,
-    ...style,
-  };
-
   return (
-    <Component className={className} style={shimmerStyle} {...props}>
-      {children}
-    </Component>
+    <>
+      <style>{SHIMMER_STYLES}</style>
+      <Component className={cn('shimmer', className)}>{children}</Component>
+    </>
   );
 }
-
-export default Shimmer;
