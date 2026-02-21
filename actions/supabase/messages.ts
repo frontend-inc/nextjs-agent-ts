@@ -5,13 +5,14 @@ import { supabase } from '@/services/supabase/client';
 export async function getMessages(chatId: string) {
   const { data, error } = await supabase
     .from('messages')
-    .select('*')
+    .select('id, role, parts, chat_id, created_at')
     .eq('chat_id', chatId)
     .order('created_at', { ascending: true });
 
   if (error) throw new Error(error.message);
 
   return (data || []).map((msg) => ({
+    id: msg.id,
     role: msg.role,
     parts: msg.parts,
   }));
