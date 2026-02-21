@@ -2,6 +2,7 @@
 
 import type { ChatStatus } from "ai";
 import { ChatInput, type PromptInputMessage } from "./ChatInput";
+import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Suggestion } from "@/components/ai-elements/suggestion";
 
 export interface PromptSuggestion {
@@ -54,9 +55,11 @@ export function ChatPrompt({
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-6 p-4">
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
-          How can I help you today?
-        </h1>
+        <Shimmer>
+          <h1 className="text-3xl font-bold tracking-tight">
+            How can I help you today?
+          </h1>
+        </Shimmer>
         <p className="text-muted-foreground">
           Start a conversation or try one of the suggestions below
         </p>
