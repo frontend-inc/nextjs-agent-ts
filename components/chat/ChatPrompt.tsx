@@ -61,10 +61,8 @@ export function ChatPrompt({
             <RiOpenaiLine className="size-6 text-primary-offset animate-pulse" />
           </div>
         </div>
-        <Shimmer>
-          <h1 className="text-3xl font-bold tracking-tight">
-            How can I help you today?
-          </h1>
+        <Shimmer as="h1" className="text-3xl font-bold tracking-tight">
+          How can I help you today?
         </Shimmer>
         <p className="text-muted-foreground">
           Start a conversation or try one of the suggestions below
