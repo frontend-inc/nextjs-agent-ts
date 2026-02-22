@@ -2,6 +2,7 @@
 
 import type { ChatStatus } from "ai";
 import { ChatInput, type PromptInputMessage } from "./ChatInput";
+import { RiOpenaiLine } from "@remixicon/react";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Suggestion } from "@/components/ai-elements/suggestion";
 
@@ -54,7 +55,12 @@ export function ChatPrompt({
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-6 p-4">
-      <div className="space-y-2 text-center">
+      <div className="space-y-3 text-center">
+        <div className="flex items-center justify-center gap-2 text-primary">
+          <div className="flex items-center justify-center size-12 rounded-xl bg-primary">
+            <RiOpenaiLine className="size-6 text-primary-offset animate-pulse" />
+          </div>
+        </div>
         <Shimmer>
           <h1 className="text-3xl font-bold tracking-tight">
             How can I help you today?
