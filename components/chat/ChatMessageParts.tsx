@@ -9,7 +9,13 @@ import {
   ToolOutput,
 } from "@/components/ai-elements/tool";
 import { Loader } from "@/components/ai-elements/loader";
-import { toolComponents } from "@/chat.config";
+import { CreateContactTool } from "@/components/tools/create-contact-tool";
+import { FetchDocumentsTool } from "@/components/tools/fetch-documents-tool";
+
+const toolComponents: Record<string, React.ComponentType<any>> = {
+  createContact: CreateContactTool,
+  fetchDocuments: FetchDocumentsTool,
+};
 
 // Helper functions
 export function getTextContent(parts: UIMessagePart[]): string {

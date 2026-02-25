@@ -50,12 +50,9 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
     setMessages: setChatMessages,
     sendMessage,
     stop,
-    error: aiError,
-    addToolApprovalResponse,
   } = useChat({
     transport: transportRef.current,
     onFinish: async () => {
-      // Refresh chat list after message completion
       fetchChats();
     },
     onError: (error) => {
@@ -231,10 +228,6 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
     },
     [status, sendMessage, chatMessages, isUploading]
   );
-
-  const handleStop = useCallback(() => {
-    stop();
-  }, [stop]);
 
   const hasMessages = chatMessages.length > 0;
 
