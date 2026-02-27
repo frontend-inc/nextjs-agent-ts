@@ -5,8 +5,9 @@ import { supabase } from '@/services/supabase/client';
 export async function fetchPublishedDocuments(query?: string) {
   
   let request = supabase
-    .from('documents')
+    .from('cms')
     .select('*')
+    .eq('collection', 'articles')
     .eq('published', true)
     .order('created_at', { ascending: false });
 
