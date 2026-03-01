@@ -1,6 +1,6 @@
 import { streamText, convertToModelMessages, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { fetchDocuments } from './tools/fetch-documents';
+
 import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
 import { insertMessages } from '@/actions/supabase/messages';
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const result = await streamText({
       model,
       messages: convertedMessages,
-      tools: { fetchDocuments },
+      tools: {},
       stopWhen: stepCountIs(20),
       providerOptions: {
         openrouter: {

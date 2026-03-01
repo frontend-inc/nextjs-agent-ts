@@ -9,11 +9,7 @@ import {
   ToolOutput,
 } from "@/components/ai-elements/tool";
 import { Loader } from "@/components/ai-elements/loader";
-import { FetchDocumentsTool } from "@/components/tools/fetch-documents-tool";
-
-const toolComponents: Record<string, React.ComponentType<any>> = {
-  fetchDocuments: FetchDocumentsTool,
-};
+const toolComponents: Record<string, React.ComponentType<any>> = {};
 
 // Helper functions
 export function getTextContent(parts: UIMessagePart[]): string {
