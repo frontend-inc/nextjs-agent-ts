@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     const prunedMessages = pruneMessages({
       messages: convertedMessages,
       reasoning: 'all',
+      toolCalls: 'none',
     });
 
     // Get the last user message for persistence
