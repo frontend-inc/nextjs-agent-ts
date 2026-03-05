@@ -8,7 +8,6 @@ import { ChatPrompt, PromptSuggestion } from './ChatPrompt';
 import { ChatSidebar, type Chat } from './ChatSidebar';
 import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { DEFAULT_MODEL_ID } from '@/lib/llm-models';
 import { getUserId } from '@/actions/supabase/chat-store';
 import { uploadFile } from '@/actions/supabase/upload-file';
 import { createChat, listChats, deleteChat } from '@/actions/supabase/chats';
@@ -26,19 +25,15 @@ interface ChatAgentProps {
 
 export function ChatAgent({ suggestions }: ChatAgentProps) {
   const [inputValue, setInputValue] = useState('');
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL_ID);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<Chat[]>([]);
-  const selectedModelRef = useRef(selectedModel);
   const chatIdRef = useRef(chatId);
-  selectedModelRef.current = selectedModel;
   chatIdRef.current = chatId;
 
   const transportRef = useRef(
     new DefaultChatTransport({
       api: '/api/chat',
       headers: () => ({
-        'X-Agent-Id': selectedModelRef.current,
         ...(chatIdRef.current ? { 'x-chat-id': chatIdRef.current } : {}),
       }),
     })
@@ -252,8 +247,6 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
               onSubmit={handleSendMessage}
               status={chatStatus}
               suggestions={suggestions}
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
             />
           </div>
         ) : (
@@ -274,8 +267,6 @@ export function ChatAgent({ suggestions }: ChatAgentProps) {
                   onChange={setInputValue}
                   onSubmit={handleSendMessage}
                   status={chatStatus}
-                  selectedModel={selectedModel}
-                  onModelChange={setSelectedModel}
                 />
               </div>
             </div>

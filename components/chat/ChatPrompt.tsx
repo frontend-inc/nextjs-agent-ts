@@ -17,8 +17,6 @@ interface ChatPromptProps {
   onSubmit: (message: PromptInputMessage) => void;
   status?: ChatStatus;
   suggestions?: PromptSuggestion[];
-  selectedModel?: string;
-  onModelChange?: (model: string) => void;
 }
 
 const defaultSuggestions: PromptSuggestion[] = [
@@ -46,8 +44,6 @@ export function ChatPrompt({
   onSubmit,
   status = "ready",
   suggestions = defaultSuggestions,
-  selectedModel,
-  onModelChange,
 }: ChatPromptProps) {
   const handleSuggestionClick = (suggestion: string) => {
     onChange(suggestion);
@@ -75,8 +71,6 @@ export function ChatPrompt({
           onChange={onChange}
           onSubmit={onSubmit}
           status={status}
-          selectedModel={selectedModel}
-          onModelChange={onModelChange}
         />
       </div>
 

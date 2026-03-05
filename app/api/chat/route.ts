@@ -1,7 +1,6 @@
 import { streamText, convertToModelMessages, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
-import { DEFAULT_MODEL_ID, getModelById } from '@/lib/llm-models';
 import { insertMessages } from '@/actions/supabase/messages';
 
 const openrouter = createOpenRouter({
@@ -12,10 +11,9 @@ const openrouter = createOpenRouter({
 export async function POST(request: Request) {
   try {
     const chatId = request.headers.get('x-chat-id');
-    const { messages, modelId } = await request.json();
+    const { messages } = await request.json();
 
-    const selectedModel = getModelById(modelId) ? modelId : DEFAULT_MODEL_ID;
-    const model = openrouter(selectedModel);
+    const model = openrouter('anthropic/claude-haiku-4.5');
 
     const systemMessage = {
       role: 'system',
