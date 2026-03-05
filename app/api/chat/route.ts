@@ -1,4 +1,4 @@
-import { streamText, convertToModelMessages, stepCountIs } from 'ai';
+import { streamText, convertToModelMessages, stepCountIs, pruneMessages } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
 import { insertMessages } from '@/actions/supabase/messages';
@@ -19,15 +19,21 @@ export async function POST(request: Request) {
       role: 'system',
       parts: [{ type: 'text', text: 'You are an AI assistant.' }],
     };
+
     const allMessages = [systemMessage, ...messages];
     const convertedMessages = await convertToModelMessages(allMessages);
+
+    const prunedMessages = pruneMessages({
+      messages: convertedMessages,
+      reasoning: 'all',
+    });
 
     // Get the last user message for persistence
     const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
 
     const result = await streamText({
       model,
-      messages: convertedMessages,
+      messages: prunedMessages,
       tools: {},
       stopWhen: stepCountIs(20),
       providerOptions: {
